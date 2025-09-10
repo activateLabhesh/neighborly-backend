@@ -1,14 +1,15 @@
-#🏢 Digital Society Platform
+🏢 Digital Society Platform
 
 A collaborative platform for residents, society management committees, and staff to raise issues, track finances, vote on decisions, and access updates.
 Built with React (frontend), Express (backend), and PostgreSQL/Supabase (database).
 
-#🌟 Vision
+🌟 Vision
 
 Empower communities to manage complaints, budgets, polls, services, and notices transparently in one place.
 
-##⚙️ Core Features
-#🔑 Role-Based Access
+⚙️ Core Features
+
+🔑 Role-Based Access
 
 Residents (Users): Raise complaints, vote in polls, view notices, book services.
 
@@ -24,13 +25,13 @@ Complaints move through statuses → Pending → In Progress → Resolved.
 
 Auto-escalation if unresolved after X days.
 
-#💰 Society Budget & Expenses
+💰 Society Budget & Expenses
 
 Transparent view of maintenance collections, allocations, and expenses.
 
 Residents see charts of where funds are used.
 
-#📢 Digital Forum (Community Hub)
+📢 Digital Forum (Community Hub)
 
 Notice Board: Committee posts updates.
 
@@ -53,7 +54,7 @@ Track bookings & status updates by staff/admin.
 | Notices           | View            | View                    | Create, Edit, Delete          |
 | Services/Bookings | Book, Track     | Update assigned booking | Add service, Approve bookings |
 
-#⚡USP's
+⚡USP's
 
 ✅ Role-based login (Resident/Admin)
 ✅ Complaint filing + tracking
@@ -62,7 +63,7 @@ Track bookings & status updates by staff/admin.
 ✅ Services (e.g., ambulance booking, hall booking, pool booking, etc.)
 
 
-#📌 Future Enhancements
+📌 Future Enhancements
 Visitor management (digital gate entry, delivery logs) for admins.
 
 Community marketplace (food vendors, electricians).
