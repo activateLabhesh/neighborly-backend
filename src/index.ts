@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import supabase, { testSupabaseConnection } from './config/supabase';
+import { testSupabaseConnection } from './config/supabase';
 import complaintsRouter from './routes/complaintRoutes';
 import authRouter from './routes/authRoutes';
 import { authenticate } from './middleware/authMiddleware';
@@ -22,8 +22,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/complaints', authenticate, complaintsRouter);
-app.use('/notice', noticeroutes);
-app.use('/poll', pollroutes);
+app.use('/api/notice', authenticate, noticeroutes);
+app.use('/api/poll', authenticate, pollroutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
