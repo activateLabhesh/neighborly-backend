@@ -46,9 +46,35 @@ export const login = async (req: Request, res: Response) => {
     if (!email || !password) {
         return res.status(400).json({ message: 'Email and password are required.' });
     }
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-        return res.status(401).json({ message: error.message });
+    try {
+        const { data, error } = await authService.loginUser(email, password);
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data.session) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        res.cookie('access_token', data.session.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', 
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            path: '/',
+        });
+
+        res.status(200).json({ message: 'Logged in successfully', user: data.user });
+    } catch (error) {
+        res.status(401).json({ message: (error as Error).message });
     }
-    res.status(200).json(data);
+};
+
+export const logout = (req: Request, res: Response) => {
+    res.clearCookie('access_token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
 };

@@ -6,12 +6,14 @@ import authRouter from './routes/authRoutes';
 import { authenticate } from './middleware/authMiddleware';
 import noticeroutes from './routes/noticeroutes';
 import pollroutes from './routes/pollroutes';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cookieParser());
 
 
 app.get('/', (req, res) => {

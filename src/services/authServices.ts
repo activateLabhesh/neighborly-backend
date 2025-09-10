@@ -1,7 +1,7 @@
 import supabase from '../config/supabase';
 import { customAlphabet } from 'nanoid';
 
-// Generate a unique 6-character society code (e.g., 'A8B-C1D')
+//generate society code
 const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6);
 const formatSocietyCode = (code: string) => `${code.slice(0, 3)}-${code.slice(3)}`;
 
@@ -20,10 +20,6 @@ export const createOwnerAndSociety = async (email: string, password: string, ful
     }
     const userId = authData.user.id;
 
-    // NOTE: The following operations are not in a transaction. 
-    // In a production environment, you would wrap these in a database function (RPC call) 
-    // to ensure they either all succeed or all fail together.
-
     // 2. Create the society
     const societyCode = formatSocietyCode(nanoid());
     const { data: society, error: societyError } = await supabase.from('societies').insert({
@@ -34,7 +30,6 @@ export const createOwnerAndSociety = async (email: string, password: string, ful
     }).select().single();
 
     if (societyError) {
-        // Attempt to clean up the created user if society creation fails
         await supabase.auth.admin.deleteUser(userId);
         throw societyError;
     }
@@ -48,9 +43,7 @@ export const createOwnerAndSociety = async (email: string, password: string, ful
     }).select().single();
 
     if (profileError) {
-        // Attempt to clean up
         await supabase.auth.admin.deleteUser(userId);
-        // You might also want to delete the society here
         throw profileError;
     }
 
@@ -106,4 +99,12 @@ export const createStaff = async (email: string, password: string, fullName: str
     if (profileError) throw profileError;
 
     return { user: authData.user, session: authData.session, profile };
+};
+
+export const loginUser = async (email: string , password: string ) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+    return { data, error };
 };

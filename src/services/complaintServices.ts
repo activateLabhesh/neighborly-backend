@@ -1,7 +1,5 @@
 import supabase from '../config/supabase';
 
-// Simplified service functions. In a real app, you'd have more robust error handling and data shaping.
-
 export const createComplaint = async (data: { user_id: string; title: string; description?: string; image_url?: string; }) => {
     return supabase.from('complaints').insert(data).select().single();
 };
