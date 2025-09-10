@@ -19,7 +19,7 @@ router.patch('/:id/assign', isAdmin, controller.assignComplaint);
 // Shared Routes
 router.get('/:id', controller.getComplaintDetails); // Authorization handled in controller
 router.patch('/:id/status', (req, res, next) => {
-    if (req.user?.role === 'admin' || req.user?.role === 'staff') return next();
+    if (req.user?.role === 'owner' || req.user?.role === 'staff') return next();
     return res.status(403).json({ message: 'Forbidden' });
 }, controller.updateStatus);
 

@@ -20,4 +20,3 @@ export const testSupabaseConnection = async () => {
   };
 
 export default supabase;
-

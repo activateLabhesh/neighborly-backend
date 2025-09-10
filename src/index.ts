@@ -7,6 +7,7 @@ import serviceroute from './routes/serviceRoute'
 import { authenticate } from './middleware/authMiddleware';
 import noticeroutes from './routes/noticeroutes';
 import pollroutes from './routes/pollroutes';
+import bookingroutes from './routes/bookingroutes';
 import cookieParser from 'cookie-parser';
 dotenv.config();
 
@@ -25,7 +26,8 @@ app.use('/api/auth', authRouter);
 app.use('/api/complaints', authenticate, complaintsRouter);
 app.use('/api/notice', authenticate, noticeroutes);
 app.use('/api/poll', authenticate, pollroutes);
-app.use('/api/services', authenticate, serviceroute)
+app.use('/api/services', authenticate, serviceroute);
+app.use('/api/bookings',authenticate,bookingroutes);
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
   testSupabaseConnection();
