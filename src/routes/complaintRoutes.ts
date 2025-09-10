@@ -1,3 +1,4 @@
+/// <reference path="../types/express.d.ts" />
 import { Router } from 'express';
 import * as controller from '../controllers/complaintController';
 import { isAdmin, isStaff, isResident } from '../middleware/authMiddleware';

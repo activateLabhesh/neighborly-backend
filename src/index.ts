@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', authRouter);
-app.use('/api/complaints', complaintsRouter);
+app.use('/api/complaints', authenticate, complaintsRouter);
 app.use('/notice', noticeroutes);
 app.use('/poll', pollroutes);
 
