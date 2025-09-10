@@ -1,7 +1,7 @@
 /// <reference path="../types/express.d.ts" />
 import { Router } from 'express';
 import * as controller from '../controllers/complaintController';
-import { isAdmin, isStaff, isResident } from '../middleware/authMiddleware';
+import { isOwner, isStaff, isResident } from '../middleware/authMiddleware';
 
 const router = Router();
 
@@ -13,13 +13,13 @@ router.get('/my', isResident, controller.getMyComplaints);
 router.get('/assigned', isStaff, controller.getAssignedComplaints);
 
 // Admin Routes
-router.get('/', isAdmin, controller.getAllComplaints);
-router.patch('/:id/assign', isAdmin, controller.assignComplaint);
+router.get('/', isOwner, controller.getAllComplaints);
+router.patch('/:id/assign', isOwner, controller.assignComplaint);
 
 // Shared Routes
 router.get('/:id', controller.getComplaintDetails); // Authorization handled in controller
 router.patch('/:id/status', (req, res, next) => {
-    if (req.user?.role === 'admin' || req.user?.role === 'staff') return next();
+    if (req.user?.role === 'owner' || req.user?.role === 'staff') return next();
     return res.status(403).json({ message: 'Forbidden' });
 }, controller.updateStatus);
 

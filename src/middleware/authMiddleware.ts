@@ -30,7 +30,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         // 3. Attach user id and role to the request object
         req.user = {
             id: user.id,
-            role: profile.role as 'admin' | 'staff' | 'resident'
+            role: profile.role as 'owner' | 'staff' | 'resident'
         };
 
         next();
@@ -39,8 +39,8 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
-    if (req.user?.role !== 'admin') {
+export const isOwner = (req: Request, res: Response, next: NextFunction) => {
+    if (req.user?.role !== 'owner') {
         return res.status(403).json({ message: 'Forbidden: Admins only.' });
     }
     next();
