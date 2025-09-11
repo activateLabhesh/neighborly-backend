@@ -1,7 +1,7 @@
 import supabase from '../config/supabase';
 
-export const createComplaint = async (complaintData: { user_id: string; title: string; description?: string; image_url?: string; }) => {
-    // 1. Get the society_id from the user's profile
+export const createComplaint = async (complaintData: { user_id: string; title: string; description?: string; }) => {
+    // 1. Get the society_id from the user's profile before inserting.
     const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('society_id')
@@ -11,14 +11,18 @@ export const createComplaint = async (complaintData: { user_id: string; title: s
     if (profileError || !profileData) {
         throw new Error('Could not find user profile to determine society.');
     }
+    
+    if (!profileData.society_id) {
+        throw new Error('User is not associated with a society.');
+    }
 
-    // 2. Add the society_id to the data being inserted
+    // 2. Combine the original data with the fetched society_id.
     const dataToInsert = {
         ...complaintData,
         society_id: profileData.society_id,
     };
 
-    // 3. Insert the complete complaint data
+    // 3. Insert the complete complaint data.
     return supabase.from('complaints').insert(dataToInsert).select().single();
 };
 
