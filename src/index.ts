@@ -31,6 +31,7 @@ app.use('/api/notice', authenticate, noticeroutes);
 app.use('/api/poll', authenticate, pollroutes);
 app.use('/api/services', authenticate, serviceroute);
 app.use('/api/bookings', authenticate, bookingroutes);
+app.use('/api/chatbot', chatbotRouter);
 
 
 app.use(errorHandler);
