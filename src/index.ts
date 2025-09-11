@@ -22,19 +22,19 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// CORS configuration
 const allowedOriginsEnv = process.env.CORS_ORIGINS || '';
 const allowedOrigins = allowedOriginsEnv.split(',').map(o => o.trim()).filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // allow non-browser clients / same-origin
-    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
-      return callback(null, true);
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
     }
-    return callback(new Error('Not allowed by CORS'));
+    return callback(null, true);
   },
-  credentials: true,
+  credentials: true, 
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization','X-Requested-With'],
 }));
@@ -55,15 +55,14 @@ app.use('/api/poll', authenticate, pollroutes);
 app.use('/api/services', authenticate, serviceroute);
 app.use('/api/bookings', authenticate, bookingroutes);
 app.use('/api/chatbot', chatbotRouter);
-app.use('/api/availemergency', availemergencyroutes)
-
-app.use(errorHandler);
-
-testSupabaseConnection();
-app.use('/api/bookings',authenticate,bookingroutes);
+app.use('/api/availemergency', availemergencyroutes);
 app.use('/api/events',authenticate,eventroutes);
 app.use('/api/emergencies',authenticate,emergencyroutes);
 
+app.use(errorHandler);
+
+
+testSupabaseConnection();
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

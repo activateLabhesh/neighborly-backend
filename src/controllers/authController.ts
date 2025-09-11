@@ -46,9 +46,10 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
         res.cookie('access_token', data.session.access_token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            secure: process.env.NODE_ENV === 'production', // Will be true on Render
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for cross-site, 'lax' for local
             path: '/',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
         });
 
         res.status(200).json({ message: 'Logged in successfully', user: data.user });
