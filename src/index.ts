@@ -8,8 +8,9 @@ import { authenticate } from './middleware/authMiddleware';
 import noticeroutes from './routes/noticeroutes';
 import pollroutes from './routes/pollroutes';
 import bookingroutes from './routes/bookingroutes';
-import chatbotRouter from './routes/chatbotRoutes'; // Import the new router
+import chatbotRouter from './routes/chatbotRoutes';
 import cookieParser from 'cookie-parser';
+import { errorHandler } from './middleware/errorMiddleware'; 
 dotenv.config();
 
 const app = express();
@@ -29,11 +30,13 @@ app.use('/api/complaints', authenticate, complaintsRouter);
 app.use('/api/notice', authenticate, noticeroutes);
 app.use('/api/poll', authenticate, pollroutes);
 app.use('/api/services', authenticate, serviceroute);
-app.use('/api/bookings',authenticate,bookingroutes);
-app.use('/api/chatbot', chatbotRouter);
+app.use('/api/bookings', authenticate, bookingroutes);
 
+
+app.use(errorHandler);
+
+testSupabaseConnection();
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
-  testSupabaseConnection();
 });
