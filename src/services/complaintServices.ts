@@ -1,16 +1,30 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import supabase from '../config/supabase'; // Keep for service-role actions if needed
+import supabase from '../config/supabase'; // This uses the service_role key
 
 export const createComplaint = async (
-    complaintData: { user_id: string; title: string; description?: string; },
-    userSupabase: SupabaseClient // Accept the user-specific client
+    complaintData: { user_id: string; title: string; description?: string; }
 ) => {
+    // STEP 1: As an admin, find the society_id for the user who is creating the complaint.
+    const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('society_id')
+        .eq('id', complaintData.user_id)
+        .single();
+
+    if (profileError) {
+        // This will be caught by the controller and sent as a proper error response.
+        throw new Error('Could not find a profile for the user.');
+    }
+
+    // STEP 2: Create the complete data object, including the society_id.
     const dataToInsert = {
         ...complaintData,
+        society_id: profile.society_id, // Add the required society_id
     };
 
-    // Use the passed-in userSupabase client, which respects RLS
-    return userSupabase.from('complaints').insert(dataToInsert).select().single();
+    // STEP 3: Insert the data. Since we are using the service_role key,
+    // this operation bypasses RLS policies.
+    return supabase.from('complaints').insert(dataToInsert).select().single();
 };
 
 export const findComplaintsByUserId = async (userId: string) => {

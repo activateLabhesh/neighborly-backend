@@ -1,7 +1,6 @@
 /// <reference path="../types/express.d.ts" />
 import { Request, Response, NextFunction } from 'express';
 import * as complaintService from '../services/complaintServices';
-import { createClient } from '@supabase/supabase-js';
 
 // Helper to handle service responses
 const handleServiceResponse = (serviceResponse: { data: any; error: any; }, res: Response, next: NextFunction) => {
@@ -14,22 +13,15 @@ const handleServiceResponse = (serviceResponse: { data: any; error: any; }, res:
 // Resident: Create a new complaint
 export const createNewComplaint = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Create a temporary Supabase client that impersonates the user
-        const userSupabase = createClient(
-            process.env.SUPABASE_URL!,
-            process.env.SUPABASE_KEY!,
-            { global: { headers: { Authorization: `Bearer ${req.cookies.access_token}` } } }
-        );
-
         const { title, description } = req.body;
         const complaintData = {
-            user_id: req.user!.id,
+            user_id: req.user!.id, // We get the user ID from the auth middleware
             title,
             description,
         };
 
-        // Pass the user-specific client to the service
-        const { data, error } = await complaintService.createComplaint(complaintData, userSupabase);
+        // Call the service with just the data. The service will use its admin rights.
+        const { data, error } = await complaintService.createComplaint(complaintData);
         if (error) throw error;
         
         res.status(201).json(data);
