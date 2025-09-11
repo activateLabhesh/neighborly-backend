@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as authService from '../services/authServices';
+import supabase from '../config/supabase';
 
 export const registerOwner = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -50,6 +51,18 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             maxAge: 24 * 60 * 60 * 1000, // 24 hours
             path: '/',
         });
+
+        const role = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', data.user?.id)
+            .single();
+
+        if (role.error) {
+            throw role.error;
+        }
+
+        data.user.role = role.data?.role;
 
         res.status(200).json({ message: 'Logged in successfully', user: data.user });
     } catch (error) {
