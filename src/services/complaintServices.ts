@@ -1,29 +1,16 @@
-import supabase from '../config/supabase';
+import { SupabaseClient } from '@supabase/supabase-js';
+import supabase from '../config/supabase'; // Keep for service-role actions if needed
 
-export const createComplaint = async (complaintData: { user_id: string; title: string; description?: string; }) => {
-    // 1. Get the society_id from the user's profile before inserting.
-    const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('society_id')
-        .eq('id', complaintData.user_id)
-        .single();
-
-    if (profileError || !profileData) {
-        throw new Error('Could not find user profile to determine society.');
-    }
-    
-    if (!profileData.society_id) {
-        throw new Error('User is not associated with a society.');
-    }
-
-    // 2. Combine the original data with the fetched society_id.
+export const createComplaint = async (
+    complaintData: { user_id: string; title: string; description?: string; },
+    userSupabase: SupabaseClient // Accept the user-specific client
+) => {
     const dataToInsert = {
         ...complaintData,
-        society_id: profileData.society_id,
     };
 
-    // 3. Insert the complete complaint data.
-    return supabase.from('complaints').insert(dataToInsert).select().single();
+    // Use the passed-in userSupabase client, which respects RLS
+    return userSupabase.from('complaints').insert(dataToInsert).select().single();
 };
 
 export const findComplaintsByUserId = async (userId: string) => {
