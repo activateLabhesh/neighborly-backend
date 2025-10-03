@@ -5,19 +5,21 @@ import { Response, Request } from "express";
 export const createnotice = async (req: Request, res: Response) => {
     try {
         const userId = req.user?.id; 
-        const { title, content } = req.body as { title?: string, content?: string  };
+        const { title, content, category } = req.body as { title?: string, content?: string, category?: string  };
 
         if (!userId) {
-            return res.status(400).json({ message: "Missing requesting user id in route params (:id)" });
+            return res.status(401).json({ message: "Authentication required" });
         }
-        if (!title || !content) {
-            return res.status(400).json({ message: "Missing title or content in request body" });
+        if (!title || !content || !category) {
+            return res.status(400).json({ message: "Missing title, content or category in request body" });
         }
         
         const { data, error } = await supabase
             .from("notices")
             .insert({ 'title':title, 
-                'content': content })
+                'content': content,
+                'category': category
+            })
             .select("*");
 
         if (error) {
@@ -37,7 +39,7 @@ export const editnotice = async (req: Request, res: Response) => {
         const { noticeId, title, content } = req.body as { noticeId?: string, title?: string, content?: string  };
         
         if (!userId) {
-            return res.status(400).json({ message: "Missing requesting user id in route params (:id)" });
+            return res.status(401).json({ message: "Authentication required" });
         }
         if (!noticeId || !title || !content) {
             return res.status(400).json({ message: "Missing noticeId, title or content in request body" });
@@ -70,7 +72,7 @@ export const deletenotice = async (req: Request, res: Response) => {
         const { noticeId } = req.body as { noticeId?: string  };
 
         if (!userId) {
-            return res.status(400).json({ message: "Missing requesting user id in route params (:id)" });
+            return res.status(401).json({ message: "Authentication required" });
         }
         if (!noticeId) {
             return res.status(400).json({ message: "Missing noticeId in request body" });
@@ -98,12 +100,12 @@ export const fetchnotices = async (req: Request, res: Response) => {
         const userId = req.user?.id; 
 
         if (!userId) {
-            return res.status(400).json({ message: "Missing requesting user id in route params (:id)" });
+            return res.status(401).json({ message: "Authentication required" });
         }
 
         const { data, error } = await supabase
             .from("notices")
-            .select("title,content")
+            .select("id,title,content,category,created_at")
             .order('created_at', { ascending: false });
 
         if (error) {
